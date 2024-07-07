@@ -14,8 +14,6 @@ const Sidebar: React.FC = async () => {
         .order('created_at', {ascending: false})
         .filter('user_id', 'eq', userId)
 
-    console.log({chats})
-
 
     return (
         <div className="w-82 h-full bg-[#1e1e1e] text-[#eaeaea] flex flex-col">
