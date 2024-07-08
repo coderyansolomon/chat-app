@@ -3,7 +3,7 @@
 import { getAccessControl, getAuth } from '@kobbleio/next/server';
 import OpenAI from 'openai'
 import {v4 as uuidv4} from 'uuid'
-import { supabaseClient } from '../supabase/client';
+import { getSupabaseClient } from '../supabase/client';
 import { revalidatePath } from 'next/cache';
 
 interface Message {
@@ -40,6 +40,8 @@ export const handleNewMessage = async (formData: FormData) => {
 
     const {session} = await getAuth();
     const userId = session?.user.id;
+
+    const supabaseClient = getSupabaseClient()
 
     const {error: userMessageError} = await supabaseClient
         .from('messages')

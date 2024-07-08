@@ -1,7 +1,7 @@
 'use server'
 
 import { v4 as uuidv4 } from 'uuid';
-import { supabaseClient } from '../supabase/client';
+import { getSupabaseClient } from '../supabase/client';
 import { revalidatePath } from 'next/cache';
 
 
@@ -9,6 +9,8 @@ export const handleNewChat = async (formData: FormData): Promise<void> => {
     const chatName = formData.get('chatName') as string | null
     if (chatName){
         const newChat = {id: uuidv4(), name: chatName}
+
+        const supabaseClient = getSupabaseClient()
 
         const {error} = await supabaseClient
             .from('chats')

@@ -1,5 +1,5 @@
 import { getAuth } from "@kobbleio/next/server";
-import { supabaseClient } from "../supabase/client";
+import { getSupabaseClient } from "../supabase/client";
 import { handleNewMessage } from "../actions/handleNewMessage";
 
 interface ChatProps {
@@ -9,6 +9,7 @@ interface ChatProps {
 const Chat: React.FC<ChatProps> = async ({chatId}) => {
     const {session} = await getAuth();
     const userId = session?.user.id;
+    const supabaseClient = getSupabaseClient()
     const {data: messages} = await supabaseClient
         .from('messages')
         .select('*')

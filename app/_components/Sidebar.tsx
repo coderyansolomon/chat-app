@@ -1,6 +1,6 @@
 import { LogoutButton, PricingLink } from "@kobbleio/next/client";
 import { getAccessControl, getAuth } from "@kobbleio/next/server"
-import { supabaseClient } from "../supabase/client";
+import { getSupabaseClient } from "../supabase/client";
 import ChatList from "./ChatList";
 import { handleNewChat } from "../actions/handleNewChat";
 
@@ -11,6 +11,7 @@ const Sidebar: React.FC = async () => {
     const acl = await getAccessControl();
 
     const hasPremiumPlanPermission = await acl.hasPermission('premium-plan');
+    const supabaseClient = getSupabaseClient()
 
     const {data: chats} = await supabaseClient
         .from('chats')

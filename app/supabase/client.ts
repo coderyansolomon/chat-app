@@ -8,20 +8,19 @@ type CookieToSet = {
     options: CookieOptions;
 }
 
-function createClient(){
-    const cookieStore = cookies();
-    const kobble = getKobble()
+function createClient(cookieStore: ReturnType<typeof cookies>) {
+    const kobble = getKobble();
 
     const customFetch: typeof fetch = async (input, init = {}) => {
-        const token = await kobble.getSupabaseToken()
-        const headers = new Headers(init.headers)
-        headers.set('Authorization', `Bearer ${token}`)
+        const token = await kobble.getSupabaseToken();
+        const headers = new Headers(init.headers);
+        headers.set('Authorization', `Bearer ${token}`);
 
         return fetch(input, {
             ...init,
-            headers
-        })
-    }
+            headers,
+        });
+    };
 
     return createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL as string,
@@ -29,25 +28,26 @@ function createClient(){
         {
             cookies: {
                 getAll: () => {
-                    return cookieStore.getAll()
+                    return cookieStore.getAll();
                 },
                 setAll: (cookiesToSet: CookieToSet[]): void => {
                     try {
-                        cookiesToSet.forEach(({name, value, options}) => 
+                        cookiesToSet.forEach(({ name, value, options }) =>
                             cookieStore.set(name, value, options)
-                        )
-                    } catch{
-                        // 
+                        );
+                    } catch {
+                        //
                     }
-                }
+                },
             },
             global: {
-                fetch: customFetch
-            }
+                fetch: customFetch,
+            },
         }
-    )
-
-
+    );
 }
 
-export const supabaseClient = createClient()
+export function getSupabaseClient() {
+    const cookieStore = cookies();
+    return createClient(cookieStore);
+}
