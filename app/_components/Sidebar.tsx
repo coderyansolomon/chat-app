@@ -1,5 +1,5 @@
-import { LogoutButton } from "@kobbleio/next/client";
-import { getAuth } from "@kobbleio/next/server"
+import { LogoutButton, PricingLink } from "@kobbleio/next/client";
+import { getAccessControl, getAuth } from "@kobbleio/next/server"
 import { supabaseClient } from "../supabase/client";
 import ChatList from "./ChatList";
 import { handleNewChat } from "../actions/handleNewChat";
@@ -7,6 +7,10 @@ import { handleNewChat } from "../actions/handleNewChat";
 const Sidebar: React.FC = async () => {
     const {session} = await getAuth()
     const userId = session?.user.id
+
+    const acl = await getAccessControl();
+
+    const hasPremiumPlanPermission = await acl.hasPermission('premium-plan');
 
     const {data: chats} = await supabaseClient
         .from('chats')
@@ -23,6 +27,15 @@ const Sidebar: React.FC = async () => {
                         Logout
                     </button>
                 </LogoutButton>
+                <PricingLink>
+                    {
+                        hasPremiumPlanPermission ? (
+                            <span className="mb-4 ml-2 px-4 py-2 rounded hover:text-red-400 duration-300">Downgrade Model</span>
+                        ) : (
+                        <span className="mb-4 ml-2 px-4 py-2 rounded hover:text-green-400 duration-300">Upgrade Model</span>
+                        )
+                    }
+                </PricingLink>
                 <form action={handleNewChat} className="flex">
                     <input
                         type="text"

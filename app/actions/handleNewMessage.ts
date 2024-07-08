@@ -1,6 +1,6 @@
 'use server'
 
-import { getAuth } from '@kobbleio/next/server';
+import { getAccessControl, getAuth } from '@kobbleio/next/server';
 import OpenAI from 'openai'
 import {v4 as uuidv4} from 'uuid'
 import { supabaseClient } from '../supabase/client';
@@ -64,9 +64,15 @@ export const handleNewMessage = async (formData: FormData) => {
             return
         }
 
+    const acl = await getAccessControl();
+
+    const hasPremiumPlanPermission = await acl.hasPermission('premium-plan');
+
+    const model = hasPremiumPlanPermission ? 'gpt-4-turbo' : 'gpt-3.5-turbo'
+
     try{
         const response = await openai.chat.completions.create({
-            model: 'gpt-3.5-turbo',
+            model,
             messages: [
                 {role: 'system', content: 'You are a helpful assistant.'},
                 ...existingMessages,
